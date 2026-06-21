@@ -4,7 +4,7 @@
 
 # Allow known-public Cloudinary values in build output
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, NEXT_PUBLIC_CLOUDINARY_API_KEY"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME"
   SECRETS_SCAN_ENABLED = "true"
 
 [[plugins]]
