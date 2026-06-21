@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("admin")
+  avatarUrl    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+}
+
+model Project {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  title        String
+  description  String
+  date         DateTime  @default(now())
+  tags         String    @default("")
+  published    Boolean   @default(false)
+  featured     Boolean   @default(false)
+  coverImageId  String?  @unique
+  coverImage   Image?    @relation("CoverImage", fields: [coverImageId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  authorId     String
+  author       User      @relation(fields: [authorId], references: [id])
+  images       Image[]   @relation("ProjectImages")
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id            String    @id @default(cuid())
+  url           String
+  publicId      String
+  width         Int?
+  height        Int?
+  format        String?
+  alt           String?
+  sortOrder     Int       @default(0)
+  projectId     String
+  project       Project   @relation("ProjectImages", fields: [projectId], references: [id], onDelete: Cascade)
+  coverOfProject Project? @relation("CoverImage")
+  createdAt     DateTime  @default(now())
+}
