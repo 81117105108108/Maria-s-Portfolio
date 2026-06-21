@@ -11,7 +11,7 @@ export interface UploadParams {
 export function getUploadParams(): UploadParams {
   const timestamp = Math.round(new Date().getTime() / 1000);
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
-  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || '';
+  const apiKey = process.env.CLOUDINARY_API_KEY || '';
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || '';
 
   const params: Record<string, string | number> = {
