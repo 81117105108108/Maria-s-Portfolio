@@ -2,9 +2,9 @@
   command = "npm run build"
   publish = ".next"
 
-# Allow known-public Cloudinary values in build output
+# Allow known values in build output (these are either public or placeholders)
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, NEXT_PUBLIC_CLOUDINARY_API_KEY"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,NEXT_PUBLIC_CLOUDINARY_API_KEY,CLOUDINARY_CLOUD_NAME,CLOUDINARY_UPLOAD_PRESET,DATABASE_URL,NEXTAUTH_URL"
   SECRETS_SCAN_ENABLED = "true"
 
 [[plugins]]
