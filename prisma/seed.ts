@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Use environment variables for emails - change these in .env before deployment
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'BubbD960@gmail.com';
   const mariaEmail = process.env.MARIA_EMAIL || 'maria@example.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'BubbyD071213';
   const mariaPassword = process.env.MARIA_PASSWORD || 'maria123';
 
   const hashedAdmin = await bcrypt.hash(adminPassword, 12);
