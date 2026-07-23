@@ -5,9 +5,23 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Base color variables — overridden by layout.tsx from DB */
     --color-primary: #8a7658;
     --color-primary-hover: #6e5e47;
     --color-accent: #1a1a2e;
+
+    /* Brand palette derived from primary via color-mix() */
+    --brand-50: color-mix(in srgb, var(--color-primary) 5%, white);
+    --brand-100: color-mix(in srgb, var(--color-primary) 12%, white);
+    --brand-200: color-mix(in srgb, var(--color-primary) 25%, white);
+    --brand-300: color-mix(in srgb, var(--color-primary) 40%, white);
+    --brand-400: color-mix(in srgb, var(--color-primary) 60%, white);
+    --brand-500: var(--color-primary);
+    --brand-600: var(--color-primary-hover);
+    --brand-700: color-mix(in srgb, var(--color-primary) 80%, black);
+    --brand-800: color-mix(in srgb, var(--color-primary) 90%, black);
+    --brand-900: color-mix(in srgb, var(--color-primary) 96%, black);
+    --brand-950: color-mix(in srgb, var(--color-primary) 100%, black);
   }
 
   body {

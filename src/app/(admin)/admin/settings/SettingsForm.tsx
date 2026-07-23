@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { CMS_DEFAULTS } from '@/lib/constants';
 
 type Settings = Record<string, string>;
 
 export function SettingsForm() {
+  const router = useRouter();
   const [settings, setSettings] = useState<Settings>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -39,8 +42,41 @@ export function SettingsForm() {
 
       setSettings((prev) => ({ ...prev, ...updates }));
       setMessage({ type: 'success', text: `${section} settings saved!` });
+      router.refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save. Try again.';
+      setMessage({ type: 'error', text: msg });
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function resetToDefaults(section: string, keys: string[]) {
+    setSaving(section);
+    setMessage(null);
+
+    const updates: Settings = {};
+    for (const key of keys) {
+      updates[key] = CMS_DEFAULTS[key] || '';
+    }
+
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: updates }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error (${res.status})`);
+      }
+
+      setSettings((prev) => ({ ...prev, ...updates }));
+      setMessage({ type: 'success', text: `${section} reset to defaults.` });
+      router.refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to reset.';
       setMessage({ type: 'error', text: msg });
     } finally {
       setSaving(null);
@@ -72,7 +108,16 @@ export function SettingsForm() {
 
       {/* Homepage Content */}
       <div className="bg-white rounded-lg border border-brand-200 p-6">
-        <h2 className="text-lg font-semibold text-brand-800 mb-2">Homepage Content</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold text-brand-800">Homepage Content</h2>
+          <button
+            onClick={() => resetToDefaults('Homepage', ['home_hero_title', 'home_hero_description', 'home_about_snippet'])}
+            disabled={saving !== null}
+            className="text-xs text-brand-400 hover:text-brand-600 transition-colors disabled:opacity-50"
+          >
+            Reset to defaults
+          </button>
+        </div>
         <p className="text-sm text-brand-500 mb-4">
           Edit the hero section text that appears on your public homepage.
         </p>
@@ -150,7 +195,16 @@ export function SettingsForm() {
 
       {/* Site Colors */}
       <div className="bg-white rounded-lg border border-brand-200 p-6">
-        <h2 className="text-lg font-semibold text-brand-800 mb-2">Site Colors</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold text-brand-800">Site Colors</h2>
+          <button
+            onClick={() => resetToDefaults('Colors', ['site_primary_color', 'site_accent_color'])}
+            disabled={saving !== null}
+            className="text-xs text-brand-400 hover:text-brand-600 transition-colors disabled:opacity-50"
+          >
+            Reset to defaults
+          </button>
+        </div>
         <p className="text-sm text-brand-500 mb-4">
           Customize the site&apos;s primary and accent color. Pick a hex color or type it directly.
         </p>

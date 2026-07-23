@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { CMS_DEFAULTS } from '@/lib/constants';
 
 type AuthState = 'loading' | 'ready' | 'denied';
 
 export function EditBar() {
+  const router = useRouter();
   const [authState, setAuthState] = useState<AuthState>('loading');
   const [open, setOpen] = useState(false);
   const [panelLoaded, setPanelLoaded] = useState(false);
@@ -95,6 +98,7 @@ export function EditBar() {
       }
       setSettings({ ...draft });
       setMessage('Settings saved successfully');
+      router.refresh();
     } catch {
       setMessage('Failed to save settings');
     } finally {
@@ -111,6 +115,48 @@ export function EditBar() {
       document.documentElement.style.setProperty('--color-accent', settings.site_accent_color);
     }
   }, [settings]);
+
+  const handleResetDefaults = useCallback(async (section: string) => {
+    const keys = section === 'homepage'
+      ? ['home_hero_title', 'home_hero_description']
+      : ['site_primary_color', 'site_accent_color'];
+
+    const updates: Record<string, string> = {};
+    for (const key of keys) {
+      updates[key] = CMS_DEFAULTS[key] || '';
+    }
+
+    setSaving(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: updates }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage(data?.error || 'Failed to reset');
+        return;
+      }
+      setDraft((prev) => ({ ...prev, ...updates }));
+      setSettings((prev) => ({ ...prev, ...updates }));
+      // Apply color defaults live
+      for (const [key, value] of Object.entries(updates)) {
+        if (key === 'site_primary_color') {
+          document.documentElement.style.setProperty('--color-primary', value);
+        } else if (key === 'site_accent_color') {
+          document.documentElement.style.setProperty('--color-accent', value);
+        }
+      }
+      setMessage(`${section} reset to defaults`);
+      router.refresh();
+    } catch {
+      setMessage('Failed to reset');
+    } finally {
+      setSaving(false);
+    }
+  }, [router]);
 
   // Don't render anything for non-admins
   if (authState !== 'ready') return null;
@@ -173,8 +219,15 @@ export function EditBar() {
               <div className="space-y-6">
                 {/* Homepage section */}
                 <div>
-                  <div className="mb-4 border-b border-gray-200 pb-2">
+                  <div className="mb-4 border-b border-gray-200 pb-2 flex items-center justify-between">
                     <h3 className="text-sm font-medium text-gray-700">Homepage</h3>
+                    <button
+                      onClick={() => handleResetDefaults('homepage')}
+                      disabled={saving}
+                      className="text-xs text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Reset to default
+                    </button>
                   </div>
                   <div className="space-y-4">
                     <div>
@@ -206,10 +259,17 @@ export function EditBar() {
 
                 {/* Colors section */}
                 <div>
-                  <div className="mb-4 border-b border-gray-200 pb-2">
+                  <div className="mb-4 border-b border-gray-200 pb-2 flex items-center justify-between">
                     <h3 className="text-sm font-medium text-gray-700">
                       Colors <span className="text-xs font-normal text-gray-400">(live preview)</span>
                     </h3>
+                    <button
+                      onClick={() => handleResetDefaults('colors')}
+                      disabled={saving}
+                      className="text-xs text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Reset to default
+                    </button>
                   </div>
                   <div className="space-y-4">
                     {/* Primary Color */}
@@ -292,9 +352,9 @@ export function EditBar() {
                 {message && (
                   <div
                     className={`rounded-md px-3 py-2 text-sm ${
-                      message.includes('successfully')
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-red-50 text-red-700'
+                      message.includes('Failed')
+                        ? 'bg-red-50 text-red-700'
+                        : 'bg-green-50 text-green-700'
                     }`}
                   >
                     {message}

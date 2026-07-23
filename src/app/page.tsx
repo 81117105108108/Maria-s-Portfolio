@@ -4,8 +4,6 @@ import { getProjects } from '@/lib/db/projects';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { Button } from '@/components/ui/Button';
 
-export const revalidate = 60;
-
 export default async function HomePage() {
   const settings = await getAllSettings();
   const { projects: featuredProjects } = await getProjects({
