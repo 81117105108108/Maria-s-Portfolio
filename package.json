@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build",
-    "postbuild": "prisma db push && tsx prisma/seed.ts",
+    "build": "next build",
+    "vercel-build": "prisma generate && next build",
+    "postbuild": "tsx prisma/seed.ts",
     "start": "next start",
     "lint": "next lint",
     "seed": "prisma db push && tsx prisma/seed.ts",
