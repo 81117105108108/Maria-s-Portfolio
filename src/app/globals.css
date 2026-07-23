@@ -29,7 +29,8 @@
   }
 
   ::selection {
-    @apply bg-brand-300/40 text-brand-900;
+    background-color: color-mix(in srgb, var(--brand-300) 40%, transparent);
+    color: var(--brand-900);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -82,6 +83,15 @@
 
   .hover\:bg-accent:hover {
     background-color: var(--color-accent);
+  }
+
+  /* Opacity variants — Tailwind can't compose alpha on CSS-var colors */
+  .bg-brand-900\/70 {
+    background-color: color-mix(in srgb, var(--brand-900) 70%, transparent);
+  }
+
+  .hover\:bg-brand-50\/50:hover {
+    background-color: color-mix(in srgb, var(--brand-50) 50%, transparent);
   }
 
   .scrollbar-thin {
