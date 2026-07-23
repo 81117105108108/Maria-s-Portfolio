@@ -32,12 +32,16 @@ export function SettingsForm() {
         body: JSON.stringify({ settings: updates }),
       });
 
-      if (!res.ok) throw new Error('Failed to save');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error (${res.status})`);
+      }
 
       setSettings((prev) => ({ ...prev, ...updates }));
       setMessage({ type: 'success', text: `${section} settings saved!` });
-    } catch {
-      setMessage({ type: 'error', text: 'Failed to save. Try again.' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to save. Try again.';
+      setMessage({ type: 'error', text: msg });
     } finally {
       setSaving(null);
     }
