@@ -5,6 +5,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    --color-primary: #8a7658;
+    --color-primary-hover: #6e5e47;
+    --color-accent: #1a1a2e;
   }
 
   body {
@@ -27,6 +30,46 @@
 }
 
 @layer utilities {
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .hover\:text-primary:hover {
+    color: var(--color-primary);
+  }
+
+  .hover\:bg-primary:hover {
+    background-color: var(--color-primary);
+  }
+
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  .bg-accent {
+    background-color: var(--color-accent);
+  }
+
+  .border-accent {
+    border-color: var(--color-accent);
+  }
+
+  .hover\:text-accent:hover {
+    color: var(--color-accent);
+  }
+
+  .hover\:bg-accent:hover {
+    background-color: var(--color-accent);
+  }
+
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: theme('colors.brand.300') transparent;

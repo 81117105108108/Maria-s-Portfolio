@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '../prisma';
 
 export async function getSetting(key: string): Promise<string | null> {
@@ -15,7 +16,7 @@ export async function setSetting(key: string, value: string): Promise<void> {
   });
 }
 
-export async function getAllSettings(): Promise<Record<string, string>> {
+export const getAllSettings = cache(async (): Promise<Record<string, string>> => {
   const settings = await prisma.siteSetting.findMany();
   return settings.reduce(
     (acc, s) => {
@@ -24,4 +25,4 @@ export async function getAllSettings(): Promise<Record<string, string>> {
     },
     {} as Record<string, string>,
   );
-}
+});

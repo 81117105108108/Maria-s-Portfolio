@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
+import { getAllSettings } from '@/lib/db/settings';
 import { getProjects } from '@/lib/db/projects';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { Button } from '@/components/ui/Button';
@@ -7,11 +7,20 @@ import { Button } from '@/components/ui/Button';
 export const revalidate = 60;
 
 export default async function HomePage() {
+  const settings = await getAllSettings();
   const { projects: featuredProjects } = await getProjects({
     featured: true,
     published: true,
     limit: 6,
   });
+
+  const heroTitle = settings.home_hero_title || "Maria's Portfolio";
+  const heroDescription =
+    settings.home_hero_description ||
+    'A curated collection of 3D modeling and creative work.';
+  const aboutSnippet =
+    settings.home_about_snippet ||
+    "Welcome to my portfolio. I'm a 3D modeler and creative artist with a passion for bringing ideas to life. Each project represents a unique vision and a distinct creative journey.";
 
   return (
     <div className="animate-fade-in">
@@ -20,10 +29,10 @@ export default async function HomePage() {
         <div className="container-page">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-6xl font-display font-bold text-brand-900 leading-tight">
-              {SITE_NAME}
+              {heroTitle}
             </h1>
             <p className="mt-4 text-lg md:text-xl text-brand-600 max-w-xl leading-relaxed">
-              {SITE_DESCRIPTION}
+              {heroDescription}
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link href="/projects">
@@ -67,9 +76,7 @@ export default async function HomePage() {
               About
             </h2>
             <p className="text-brand-600 leading-relaxed mb-6">
-              Welcome to my portfolio. I&apos;m a 3D modeler and creative
-              artist with a passion for bringing ideas to life. Each project
-              represents a unique vision and a distinct creative journey.
+              {aboutSnippet}
             </p>
             <Link href="/about">
               <Button variant="secondary">Learn More</Button>

@@ -14,6 +14,18 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
+
+  // Batch upsert: { settings: { key: value, ... } }
+  if (body.settings && typeof body.settings === 'object') {
+    for (const [key, value] of Object.entries(body.settings)) {
+      if (typeof value === 'string') {
+        await setSetting(key, value);
+      }
+    }
+    return NextResponse.json({ success: true });
+  }
+
+  // Single upsert: { key: string, value: string }
   if (!body.key || typeof body.value !== 'string') {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
